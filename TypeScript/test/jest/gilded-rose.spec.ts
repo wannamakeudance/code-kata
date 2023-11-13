@@ -71,4 +71,7 @@ describe("Gilded Rose App Testing", () => {
     gildedRose.updateQuality();
     expect(gildedRose.items[0].quality).toBe(0);
   });
+
+  // TODO: "Sulfuras" item, its Quality is 80 and it never alters.
+  // TODO: "Conjured" items degrade in Quality twice as fast as normal items
 });
