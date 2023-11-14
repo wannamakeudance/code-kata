@@ -1,5 +1,11 @@
 import { Item } from "./item";
 
+const NORMAL_ITEM_MAX_QUALITY = 50;
+const MIN_QUALITY = 0;
+const LEGENDARY_QUALITY = 80;
+const BACKSTAGE_PASS_THRESHOLD_1 = 11;
+const BACKSTAGE_PASS_THRESHOLD_2 = 6;
+
 export class GildedRose {
   items: Array<Item>;
 
@@ -8,57 +14,61 @@ export class GildedRose {
   }
 
   updateQuality() {
-    for (let i = 0; i < this.items.length; i++) {
-      const { name, sellIn, quality } = this.items[i];
-
-      if (
-        name != "Aged Brie" &&
-        name != "Backstage passes to a TAFKAL80ETC concert"
-      ) {
-        if (quality > 0) {
-          if (name != "Sulfuras") {
-            this.items[i].quality--;
-          }
-        }
-      } else {
-        if (quality < 50) {
-          this.items[i].quality++;
-          if (name == "Backstage passes to a TAFKAL80ETC concert") {
-            if (sellIn < 11) {
-              if (quality < 50) {
-                this.items[i].quality++;
-              }
-            }
-            if (sellIn < 6) {
-              if (quality < 50) {
-                this.items[i].quality++;
-              }
-            }
-          }
-        }
-      }
-      if (name != "Sulfuras") {
-        this.items[i].sellIn--;
-      }
-      if (this.items[i].sellIn < 0) {
-        if (name != "Aged Brie") {
-          if (name != "Backstage passes to a TAFKAL80ETC concert") {
-            if (this.items[i].quality > 0) {
-              if (name != "Sulfuras") {
-                this.items[i].quality--;
-              }
-            }
-          } else {
-            this.items[i].quality = 0;
-          }
-        } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality++;
-          }
-        }
-      }
+    for (const item of this.items) {
+      this.updateItemQuality(item);
     }
 
     return this.items;
+  }
+
+  private updateItemQuality(item: Item) {
+    const { name } = item;
+
+    switch (name) {
+      case "Sulfuras":
+        item.quality = LEGENDARY_QUALITY;
+        break;
+
+      case "Aged Brie":
+        this.updateAgedBrie(item);
+        break;
+
+      case "Backstage passes to a TAFKAL80ETC concert":
+        this.updateBackstagePass(item);
+        break;
+
+      default:
+        this.updateNormalItem(item);
+    }
+  }
+
+  private updateNormalItem(item: Item) {
+    if (item.quality > MIN_QUALITY) {
+      item.quality--;
+    }
+    item.sellIn--;
+  }
+
+  private updateAgedBrie(item: Item) {
+    if (item.quality < NORMAL_ITEM_MAX_QUALITY) {
+      item.quality++;
+    }
+    item.sellIn--;
+  }
+
+  private updateBackstagePass(item: Item) {
+    if (item.sellIn < BACKSTAGE_PASS_THRESHOLD_2) {
+      item.quality += 3;
+    } else if (item.sellIn < BACKSTAGE_PASS_THRESHOLD_1) {
+      item.quality += 2;
+    } else {
+      item.quality++;
+    }
+
+    item.sellIn--;
+
+    if (item.sellIn < 0) {
+      item.quality = 0;
+    }
   }
 }

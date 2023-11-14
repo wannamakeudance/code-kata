@@ -31,11 +31,11 @@ describe("Gilded Rose App Testing", () => {
     expect(gildedRose.items[0].quality).toBe(50);
   });
 
-  it("should never has to be sold or decreases in quality when the name of item is Sulfuras", () => {
+  it("should never has to be sold and quality is always 80 when the name of item is Sulfuras", () => {
     const gildedRose = new GildedRose([new Item("Sulfuras", 10, 30)]);
     gildedRose.updateQuality();
     expect(gildedRose.items[0].sellIn).toBe(10);
-    expect(gildedRose.items[0].quality).toBe(30);
+    expect(gildedRose.items[0].quality).toBe(80);
   });
 
   it("should increase quality by 2 when there are 10 days or less in the item named Backstage passes to a TAFKAL80ETC concert", () => {
