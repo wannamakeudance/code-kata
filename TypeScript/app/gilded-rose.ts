@@ -1,8 +1,8 @@
 import { Item } from "./item";
 
-const NORMAL_ITEM_MAX_QUALITY = 50;
 const MIN_QUALITY = 0;
-const LEGENDARY_QUALITY = 80;
+const NORMAL_ITEM_MAX_QUALITY = 50;
+const LEGENDARY_ITEM_QUALITY = 80;
 const BACKSTAGE_PASS_THRESHOLD_1 = 11;
 const BACKSTAGE_PASS_THRESHOLD_2 = 6;
 
@@ -17,20 +17,25 @@ export class GildedRose {
     for (const item of this.items) {
       this.updateItemQuality(item);
     }
-
     return this.items;
   }
 
   private updateItemQuality(item: Item) {
-    const { name } = item;
+    const { name, sellIn } = item;
+    item.sellIn--;
 
     switch (name) {
-      case "Sulfuras":
-        item.quality = LEGENDARY_QUALITY;
-        break;
-
       case "Aged Brie":
         this.updateAgedBrie(item);
+        break;
+
+      case "Sulfuras":
+        item.quality = LEGENDARY_ITEM_QUALITY;
+        item.sellIn = sellIn;
+        break;
+
+      case "Conjured":
+        item.quality -= 2;
         break;
 
       case "Backstage passes to a TAFKAL80ETC concert":
@@ -46,14 +51,12 @@ export class GildedRose {
     if (item.quality > MIN_QUALITY) {
       item.quality--;
     }
-    item.sellIn--;
   }
 
   private updateAgedBrie(item: Item) {
     if (item.quality < NORMAL_ITEM_MAX_QUALITY) {
       item.quality++;
     }
-    item.sellIn--;
   }
 
   private updateBackstagePass(item: Item) {
@@ -64,8 +67,6 @@ export class GildedRose {
     } else {
       item.quality++;
     }
-
-    item.sellIn--;
 
     if (item.sellIn < 0) {
       item.quality = 0;
